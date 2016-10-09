@@ -31,7 +31,7 @@ def colored(color, text):
 
 class TrainCollection(object):
 
-    header = 'train staion time duration first second softsleep hardsleep hardsit'.split()
+    header = 'train staion time duration first second softsleep hardsleep hardsit nosit'.split()
 
     def __init__(self, rows):
         self.rows = rows
@@ -64,7 +64,9 @@ class TrainCollection(object):
                 #硬卧
                 row['yw_num'],
                 #硬座
-                row['yz_num']
+                row['yz_num'],
+                #无座
+                row['wz_num']
             ]
             yield train
 
