@@ -17,12 +17,16 @@ Example:
 from docopt import docopt
 from stations import stations
 from prettytable import PrettyTable
+import time
 import requests
 
 def colored(color, text):
     table = {
         'red': '\033[91m',
         'green': '\033[92m',
+        'yellow': '\033[43m',
+        'blue': '\033[46m',
+        'purple': '\033[45m',
         'nc': '\033[0m'
     }
     cv = table.get(color)
@@ -31,7 +35,7 @@ def colored(color, text):
 
 class TrainCollection(object):
 
-    header = 'train staion time duration first second softsleep hardsleep hardsit nosit'.split()
+    header = 'train staion time duration business first second softsleep hardsleep hardsit nosit'.split()
 
     def __init__(self, rows):
         self.rows = rows
@@ -49,12 +53,17 @@ class TrainCollection(object):
         for row in self.rows:
             train = [
                 row['station_train_code'],
-                '\n'.join([colored('green', row['from_station_name']),
-                           colored('red', row['to_station_name']),
+                '\n'.join([(colored('yellow', '始') if row['start_station_name'] == row['from_station_name'] else colored('blue', '过'))
+                            + ' ' + colored('green', row['from_station_name']),
+                           (colored('purple', '终') if row['end_station_name'] == row['to_station_name'] else colored('blue', '过'))
+                            + ' ' + colored('red', row['to_station_name']),
                            ' ']),
                 '\n'.join([colored('green', row['start_time']),
                            colored('red', row['arrive_time'])]),
-                self._get_duration(row),
+                '\n'.join([self._get_duration(row),
+                           '当日到达' if not int(row['day_difference']) else '次日到达']),
+                #商务座
+                row['swz_num'],
                 #一等座
                 row['zy_num'],
                 #二等座
@@ -75,6 +84,7 @@ class TrainCollection(object):
         pt._set_field_names(self.header)
         for train in self.trains:
             pt.add_row(train)
+        pt.align = 'l'
         print(pt)
 
 def cli():
@@ -82,7 +92,8 @@ def cli():
     arguments = docopt(__doc__)
     from_station = stations.get(arguments['<from>'])
     to_station = stations.get(arguments['<to>'])
-    date = arguments['<date>']
+    tmp_date = arguments['<date>']
+    date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
     url = 'https://kyfw.12306.cn/otn/lcxxcx/query?purpose_codes=ADULT&queryDate={}&from_station={}&to_station={}'.format(
         date, from_station, to_station
     )
