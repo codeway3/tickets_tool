@@ -1,5 +1,5 @@
 # tickets_tool
-火车票查询工具
+### 12306火车票查询工具
 
 ## 查询格式
 """Train tickets query via command-line.  
@@ -20,6 +20,7 @@ Example:
 """  
   
 ## 更新
+* 2016.10.07 初版 实现基本功能， 分析发送的请求， 提取查询信息  
 * 2016.10.10 更新 添加到站日期显示， 添加硬座、商务座查询列
 * 2016.10.11 更新 日期已支持YYYYMMDD格式， 添加彩色车站信息标识  
 
@@ -28,4 +29,5 @@ Example:
 [prettytable文档](https://code.google.com/archive/p/prettytable/wikis/Tutorial.wiki)  
   
 ## ToDoList
-*添加参数解析与对应结果筛选
+* 添加参数解析功能与对应结果筛选  
+* 添加输入中文车站查询功能
