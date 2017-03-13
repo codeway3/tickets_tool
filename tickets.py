@@ -1,3 +1,4 @@
+#coding=utf-8
 """Train tickets query via command-line.
 
 Usage:
@@ -19,6 +20,7 @@ from stations import stations
 from prettytable import PrettyTable
 import time
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 def colored(color, text):
     table = {
@@ -50,7 +52,8 @@ class TrainCollection(object):
 
     @property
     def trains(self):
-        for row in self.rows:
+        for tmp in self.rows:
+            row = tmp['queryLeftNewDTO']
             train = [
                 row['station_train_code'],
                 '\n'.join([(colored('yellow', '始') if row['start_station_name'] == row['from_station_name'] else colored('blue', '过'))
@@ -94,13 +97,15 @@ def cli():
     to_station = stations.get(arguments['<to>'])
     tmp_date = arguments['<date>']
     date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
-    url = 'https://kyfw.12306.cn/otn/lcxxcx/query?purpose_codes=ADULT&queryDate={}&from_station={}&to_station={}'.format(
+    url = 'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'.format(
         date, from_station, to_station
     )
     r = requests.get(url, verify = False)
-    rows = r.json()['data']['datas']
-    trains = TrainCollection(rows)
-    trains.pretty_print()
+    #print(r) #验证url返回状态码
+    rows = r.json()['data'] #一级解析
+    trains = TrainCollection(rows) #二级解析 创建trains对象
+    trains.pretty_print() #完全解析 命令行输出查询结果
 
 if __name__ == '__main__':
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning) # 禁用安全请求警告
     cli()
