@@ -41,6 +41,7 @@ def colored(color, text):
 class TrainCollection(object):
 
     header = 'train station time duration business first second softsleep hardsleep hardsit nosit'.split()
+    alpha_tab = 'G C D T K Z Y'.split()
 
     def __init__(self, rows, arguments):
         self.rows = rows
@@ -59,9 +60,10 @@ class TrainCollection(object):
         for tmp in self.rows:
             row = tmp['queryLeftNewDTO']
             row_code = row['station_train_code']
-            if row_code[0].isalpha():
+            #解析列车车次字母
+            if row_code[0] in self.alpha_tab:
                 check_code = '-' + row_code[0]
-            elif row_code[0].isalnum():
+            else:
                 check_code = '-O'
             if self.arguments[check_code]:
                 train = [
