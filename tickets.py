@@ -105,17 +105,23 @@ class TrainCollection(object):
 def cli():
     """command-line interface"""
     arguments = docopt(__doc__)
+    if (not (arguments['-C'] or arguments['-D'] or arguments['-G'] or arguments['-K'] or arguments['-O'] or arguments['-T'] or arguments['-Y'] or arguments['-Z'])):
+        arguments['-C'] = arguments['-D'] = arguments['-G'] = arguments['-K'] = arguments['-O'] = arguments['-T'] = arguments['-Y'] = arguments['-Z'] = True
+    #当没有传入附加参数时 将默认参数均设置为True
     #print(arguments) #验证docopt参数
     from_station = stations.get(arguments['<from>'])
     to_station = stations.get(arguments['<to>'])
     tmp_date = arguments['<date>']
     date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
-    url = 'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'.format(
+    url = 'https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'.format(
         date, from_station, to_station
     )
+    #print(url) #验证url重组是否正确
     r = requests.get(url, verify = False)
     #print(r) #验证url返回状态码
+    #print(r.json()) #验证request返回的json数据
     rows = r.json()['data'] #一级解析
+    #print(rows) #验证一级解析结果
     trains = TrainCollection(rows, arguments) #二级解析 创建trains对象
     trains.pretty_print() #完全解析 命令行输出查询结果
 
