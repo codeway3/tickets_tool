@@ -1,4 +1,3 @@
-#coding=utf-8
 """Train tickets query via command-line.
 
 Usage:
@@ -20,6 +19,7 @@ Example:
 """
 from docopt import docopt
 from stations import stations
+from pinyin import *
 from prettytable import PrettyTable
 import time
 import requests
@@ -109,11 +109,14 @@ def cli():
         arguments['-C'] = arguments['-D'] = arguments['-G'] = arguments['-K'] = arguments['-O'] = arguments['-T'] = arguments['-Y'] = arguments['-Z'] = True
     #当没有传入附加参数时 将默认参数均设置为True
     #print(arguments) #验证docopt参数
-    from_station = stations.get(arguments['<from>'])
-    to_station = stations.get(arguments['<to>'])
+    test = PinYin()
+    test.load_word()
+    #调用汉字转换拼音模块
+    from_station = stations.get(test.hanzi2pinyin(string = arguments['<from>']))
+    to_station = stations.get(test.hanzi2pinyin(string = arguments['<to>']))
     tmp_date = arguments['<date>']
     date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
-    url = 'https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'.format(
+    url = 'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'.format(
         date, from_station, to_station
     )
     #print(url) #验证url重组是否正确
