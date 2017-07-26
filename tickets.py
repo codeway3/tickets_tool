@@ -84,19 +84,19 @@ class TrainCollection(object):
                     '\n'.join([self._get_duration(duration),
                                '当日到达' if int(duration.split(':')[0]) <= 23 else '次日到达']),
                     # 商务座
-                    '0',  # row['swz_num'],
+                    '',  # row['swz_num'],
                     # 一等座
-                    '0',  # row['zy_num'],
+                    '',  # row['zy_num'],
                     # 二等座
-                    '0',  # row['ze_num'],
+                    '',  # row['ze_num'],
                     # 软卧
-                    '0',  # row['rw_num'],
+                    '',  # row['rw_num'],
                     # 硬卧
-                    '0',  # row['yw_num'],
+                    '',  # row['yw_num'],
                     # 硬座
-                    '0',  # row['yz_num'],
+                    '',  # row['yz_num'],
                     # 无座
-                    '0',  # row['wz_num']
+                    '',  # row['wz_num']
                 ]
                 yield train
 
