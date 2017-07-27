@@ -20,7 +20,7 @@ Example:
 """
 from docopt import docopt
 from stations import stations
-from pinyin import *
+from pinyin import PinYin
 from prettytable import PrettyTable
 import time
 import requests
@@ -73,6 +73,12 @@ class TrainCollection(object):
             # 筛除停开的车次 这些车次的数据特点——起止时间均为24:00,运行时间为99h59m
             if int(duration.split(':')[0]) == 99:
                 continue
+            # 判断当日到达 次日到达 还是两日到达
+            dur_date = 0
+            if start_time > arrive_time:
+                dur_date += 1
+            if int(duration.split(':')[0]) > 23:
+                dur_date += 1
             # 解析列车车次字母
             if train_code[0] in self.alpha_tab:
                 check_code = '-' + train_code[0]
@@ -83,14 +89,16 @@ class TrainCollection(object):
                 train = [
                     train_code,
                     '\n'.join([(colored('yellow', '始') if start_station_code == from_station_code else colored('blue', '过'))
-                                + ' ' + colored('green', self.map[from_station_code]),
-                               (colored('purple', '终') if end_station_code == to_station_code else colored('blue', '过'))
-                                + ' ' + colored('red', self.map[to_station_code]),
+                              + ' ' + colored('green', self.map[from_station_code]),
+                              (colored('purple', '终') if end_station_code == to_station_code else colored('blue', '过'))
+                              + ' ' + colored('red', self.map[to_station_code]),
                                ' ']),
                     '\n'.join([colored('green', start_time),
                                colored('red', arrive_time)]),
                     '\n'.join([self._get_duration(duration),
-                               '当日到达' if int(duration.split(':')[0]) <= 23 else '次日到达']),
+                               '当日到达' if dur_date == 0 else
+                               '次日到达' if dur_date == 1 else
+                               '两日到达']),
                     # 商务座
                     swz,  # row['swz_num'],
                     # 一等座
