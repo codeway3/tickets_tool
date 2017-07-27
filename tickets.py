@@ -52,7 +52,7 @@ class TrainCollection(object):
         self.arguments = arguments
 
     def _get_duration(self, duration):
-        duration = str(duration).replace(':', 'h') + 'm'
+        duration = duration.replace(':', 'h') + 'm'
         if duration.startswith('00'):
             return duration[3:]
         if duration.startswith('0'):
@@ -62,9 +62,15 @@ class TrainCollection(object):
     @property
     def trains(self):
         for tmp in self.rows:
+            # 数据清洗 信息提取
             row = tmp.split('|')
             train_code, start_station_code, end_station_code, from_station_code, to_station_code = row[3:8]
             start_time, arrive_time, duration = row[8:11]
+            edz, ydz = row[30:32]
+            swz = row[25] or row[32]
+            # 筛除停开的车次 这些车次的数据特点——起止时间均为24:00,运行时间为99h59m
+            if int(duration.split(':')[0]) == 99:
+                continue
             # 解析列车车次字母
             if train_code[0] in self.alpha_tab:
                 check_code = '-' + train_code[0]
@@ -84,11 +90,11 @@ class TrainCollection(object):
                     '\n'.join([self._get_duration(duration),
                                '当日到达' if int(duration.split(':')[0]) <= 23 else '次日到达']),
                     # 商务座
-                    '',  # row['swz_num'],
+                    swz,  # row['swz_num'],
                     # 一等座
-                    '',  # row['zy_num'],
+                    ydz,  # row['zy_num'],
                     # 二等座
-                    '',  # row['ze_num'],
+                    edz,  # row['ze_num'],
                     # 软卧
                     '',  # row['rw_num'],
                     # 硬卧
@@ -112,13 +118,13 @@ class TrainCollection(object):
 def cli():
     """command-line interface"""
     arguments = docopt(__doc__)
+    # 当没有传入附加参数时 将默认参数均设置为True
     if (not (arguments['-C'] or arguments['-D'] or arguments['-G'] or arguments['-K'] or arguments['-O'] or arguments['-T'] or arguments['-Y'] or arguments['-Z'])):
         arguments['-C'] = arguments['-D'] = arguments['-G'] = arguments['-K'] = arguments['-O'] = arguments['-T'] = arguments['-Y'] = arguments['-Z'] = True
-    # 当没有传入附加参数时 将默认参数均设置为True
     # print(arguments) # 验证docopt参数
+    # 调用汉字转换拼音模块
     test = PinYin()
     test.load_word()
-    # 调用汉字转换拼音模块
     from_station = stations.get(test.hanzi2pinyin(string=arguments['<from>']))
     to_station = stations.get(test.hanzi2pinyin(string=arguments['<to>']))
     tmp_date = arguments['<date>']
