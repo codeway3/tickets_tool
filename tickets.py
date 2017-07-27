@@ -66,8 +66,10 @@ class TrainCollection(object):
             row = tmp.split('|')
             train_code, start_station_code, end_station_code, from_station_code, to_station_code = row[3:8]
             start_time, arrive_time, duration = row[8:11]
+            rw = row[23]
+            wz, o, yw, yz = row[26:30]
             edz, ydz = row[30:32]
-            swz = row[25] or row[32]
+            swz = row[25] or row[32]  # 特等座或商务座 在数据传输中属于两列
             # 筛除停开的车次 这些车次的数据特点——起止时间均为24:00,运行时间为99h59m
             if int(duration.split(':')[0]) == 99:
                 continue
@@ -96,13 +98,13 @@ class TrainCollection(object):
                     # 二等座
                     edz,  # row['ze_num'],
                     # 软卧
-                    '',  # row['rw_num'],
+                    rw,  # row['rw_num'],
                     # 硬卧
-                    '',  # row['yw_num'],
+                    yw,  # row['yw_num'],
                     # 硬座
-                    '',  # row['yz_num'],
+                    yz,  # row['yz_num'],
                     # 无座
-                    '',  # row['wz_num']
+                    wz,  # row['wz_num']
                 ]
                 yield train
 
