@@ -22,6 +22,7 @@ from docopt import docopt
 from stations import stations
 from pinyin import PinYin
 from prettytable import PrettyTable
+from datetime import datetime, timedelta
 import time
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -138,7 +139,12 @@ def cli():
     from_station = stations.get(test.hanzi2pinyin(string=arguments['<from>']))
     to_station = stations.get(test.hanzi2pinyin(string=arguments['<to>']))
     tmp_date = arguments['<date>']
-    date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
+    trs = {"今天": 0, "明天": 1, "后天": 2, "大后天": 3}
+    if tmp_date in trs.keys():
+        now = datetime.today() + timedelta(days=trs[tmp_date])
+        date = now.strftime('%Y-%m-%d')
+    else:
+        date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
     url = 'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'.format(
         date, from_station, to_station
     )
