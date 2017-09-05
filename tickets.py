@@ -18,9 +18,9 @@ Options:
 Example:
     tickets beijing shanghai 2016-08-25
 """
+from res.stations import stations
+from res.pinyin import PinYin
 from docopt import docopt
-from stations import stations
-from pinyin import PinYin
 from prettytable import PrettyTable
 from datetime import datetime, timedelta
 import time
@@ -134,10 +134,10 @@ def cli():
         arguments['-C'] = arguments['-D'] = arguments['-G'] = arguments['-K'] = arguments['-O'] = arguments['-T'] = arguments['-Y'] = arguments['-Z'] = True
     # print(arguments) # 验证docopt参数
     # 调用汉字转换拼音模块
-    test = PinYin()
-    test.load_word()
-    from_station = stations.get(test.hanzi2pinyin(string=arguments['<from>']))
-    to_station = stations.get(test.hanzi2pinyin(string=arguments['<to>']))
+    p2e = PinYin()
+    p2e.load_word()
+    from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
+    to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
     tmp_date = arguments['<date>']
     trs = {"今天": 0, "明天": 1, "后天": 2, "大后天": 3}
     if tmp_date in trs.keys():
