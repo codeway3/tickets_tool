@@ -58,8 +58,7 @@ def get_url(arguments):
 
 def get_head():
     headers = {
-        'Cookie': 'JSESSIONID=38A30BE19D71FA12F405B4E91086A867; RAIL_OkLJUJ=FFAGwxGofKgV040uqVDK6eHHrhF1KCIz; BIGipServerportal=2949906698.16671.0000; route=c5c62a339e7744272a54643b3be5bf64; BIGipServerotn=1440284938.64545.0000; fp_ver=4.5.1;\
-             RAIL_EXPIRATION=1505476000691; RAIL_DEVICEID=X27r3coZZsqOEYKcfbc0xY1_s5aYoCcX8-EzeZWGLUnNBaQVKrNcMwrr2ZscDxUDPEGmzyBRzcU54fvt5aDnvxRcgGhKv7hmP5LTsQiLIRZ8aN1SoBhtTgW6Zh9EBiltVGXjplRWU_IE_3OTRf7QarduXP-k6DKt;  _jc_save_wfdc_flag=dc',
+        'Cookie': 'RAIL_DEVICEID=X27r3coZZsqOEYKcfbc0xY1_s5aYoCcX8-EzeZWGLUnNBaQVKrNcMwrr2ZscDxUDPEGmzyBRzcU54fvt5aDnvxRcgGhKv7hmP5LTsQiLIRZ8aN1SoBhtTgW6Zh9EBiltVGXjplRWU_IE_3OTRf7QarduXP-k6DKt;'
     }
     return headers
 
