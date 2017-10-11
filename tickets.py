@@ -41,7 +41,7 @@ def get_arg():
     return arguments
 
 
-def get_url(arguments):
+def deal_arg(arguments):
     p2e = PinYin()
     p2e.load_word()
     from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
@@ -53,11 +53,18 @@ def get_url(arguments):
         date = now.strftime('%Y-%m-%d')
     else:
         date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
-    url_model = 'https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'
-    url = url_model.format(
-        date, from_station, to_station
-    )
-    return url
+    return date, from_station, to_station
+
+
+def get_urls(arguments):
+    date, from_station, to_station = deal_arg(arguments)
+    url_models = ['https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
+                  'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT']
+    for url_model in url_models:
+        url = url_model.format(
+            date, from_station, to_station
+        )
+        yield url
 
 
 def get_head():
@@ -70,12 +77,16 @@ def get_head():
 def cli():
     """command-line interface"""
     arguments = get_arg()
-    url = get_url(arguments)
     headers = get_head()
-    response = requests.get(url, verify=False, headers=headers)
-    rows = response.json()['data']  # 一级解析
-    trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
-    trains.pretty_print()
+    for url in get_urls(arguments):
+        response = requests.get(url, verify=False, headers=headers)
+        if response.status_code == requests.codes.ok:
+            res_json = response.json()
+            if res_json['status']:
+                rows = res_json['data']  # 一级解析
+                trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
+                trains.pretty_print()
+                break
 
 
 if __name__ == '__main__':
