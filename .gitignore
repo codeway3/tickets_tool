@@ -1,3 +1,4 @@
 *_
 *.idea/
+*.vscode/
 _venv/

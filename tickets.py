@@ -2,7 +2,7 @@
 """Train tickets query via command-line.
 
 Usage:
-    tickets [-GCDTKZYO] <from> <to> <date>
+    tickets [-GCDTKZYO] (<from> <to> <date>)
 
 Options:
     -h,--help   显示帮助菜单
@@ -32,8 +32,12 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 def get_arg():
     arguments = docopt(__doc__)
     # 当没有传入附加参数时 将默认参数均设置为True
-    if (not (arguments['-C'] or arguments['-D'] or arguments['-G'] or arguments['-K'] or arguments['-O'] or arguments['-T'] or arguments['-Y'] or arguments['-Z'])):
-        arguments['-C'] = arguments['-D'] = arguments['-G'] = arguments['-K'] = arguments['-O'] = arguments['-T'] = arguments['-Y'] = arguments['-Z'] = True
+    argkeys = ['-C', '-D', '-G', '-K', '-O', '-T', '-Y', '-Z']
+    for key in argkeys:
+        if arguments[key]:
+            return arguments
+    for key in argkeys:
+        arguments[key] = True
     return arguments
 
 
@@ -43,7 +47,7 @@ def get_url(arguments):
     from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
     to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
     tmp_date = arguments['<date>']
-    trs = {"今天": 0, "明天": 1, "后天": 2, "大后天": 3}
+    trs = {'今天': 0, '明天': 1, '后天': 2, '大后天': 3, '0': 0, '1': 1, '2': 2, '3': 3}
     if tmp_date in trs.keys():
         now = datetime.today() + timedelta(days=trs[tmp_date])
         date = now.strftime('%Y-%m-%d')
