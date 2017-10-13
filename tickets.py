@@ -41,11 +41,26 @@ def get_arg():
     return arguments
 
 
-def deal_arg(arguments):
+def get_station_info(arguments):
     p2e = PinYin()
     p2e.load_word()
-    from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
-    to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
+    try:
+        from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
+        if from_station is None:
+            raise ValueError("Invalid from_station name: ")
+    except:
+        print(arguments['<from>'])
+    try:
+        to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
+        if to_station is None:
+            raise ValueError("Invalid to_station name: ")
+    except:
+        print(arguments['<to>'])
+    return from_station, to_station
+
+
+def deal_arg(arguments):
+    from_station, to_station = get_station_info(arguments)
     tmp_date = arguments['<date>']
     trs = {'今天': 0, '明天': 1, '后天': 2, '大后天': 3, '0': 0, '1': 1, '2': 2, '3': 3}
     if tmp_date in trs.keys():
