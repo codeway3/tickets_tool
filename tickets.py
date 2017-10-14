@@ -47,32 +47,45 @@ def get_station_info(arguments):
     try:
         from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
         if from_station is None:
-            raise ValueError("Invalid from_station name: ")
+            raise Exception
     except:
-        print(arguments['<from>'])
+        print("Invalid from_station name: {}".format(arguments['<from>']))
+        exit()
     try:
         to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
         if to_station is None:
-            raise ValueError("Invalid to_station name: ")
+            raise Exception
     except:
-        print(arguments['<to>'])
+        print("Invalid to_station name: {}".format(arguments['<to>']))
+        exit()
     return from_station, to_station
 
 
-def deal_arg(arguments):
-    from_station, to_station = get_station_info(arguments)
+def get_date_info(arguments):
     tmp_date = arguments['<date>']
     trs = {'今天': 0, '明天': 1, '后天': 2, '大后天': 3, '0': 0, '1': 1, '2': 2, '3': 3}
     if tmp_date in trs.keys():
         now = datetime.today() + timedelta(days=trs[tmp_date])
         date = now.strftime('%Y-%m-%d')
     else:
-        date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d')) if len(tmp_date) == 8 else tmp_date
-    return date, from_station, to_station
+        try:
+            if len(tmp_date) == 10:
+                date = tmp_date
+            elif len(tmp_date) == 8:
+                date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%Y%m%d'))
+            elif len(tmp_date) == 6:
+                date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%y%m%d'))
+            else:
+                raise Exception
+        except:
+            print("Invalid date: {}".format(arguments['<date>']))
+            exit()
+    return date
 
 
 def get_urls(arguments):
-    date, from_station, to_station = deal_arg(arguments)
+    from_station, to_station = get_station_info(arguments)
+    date = get_date_info(arguments)
     url_models = ['https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
                   'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT']
     for url_model in url_models:
