@@ -47,18 +47,18 @@ def get_station_info(arguments):
     try:
         from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
         if from_station is None:
-            raise Exception
-    except:
-        print("Invalid from_station name: {}".format(arguments['<from>']))
-        exit()
-    try:
+            raise ValueError
         to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
         if to_station is None:
-            raise Exception
-    except:
+            raise KeyError
+    except ValueError:
+        print("Invalid from_station name: {}".format(arguments['<from>']))
+        exit()
+    except KeyError:
         print("Invalid to_station name: {}".format(arguments['<to>']))
         exit()
-    return from_station, to_station
+    else:
+        return from_station, to_station
 
 
 def get_date_info(arguments):
