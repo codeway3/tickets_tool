@@ -107,7 +107,11 @@ def cli():
     arguments = get_arg()
     headers = get_head()
     for url in get_urls(arguments):
-        response = requests.get(url, verify=False, headers=headers)
+        try:
+            response = requests.get(url, verify=False, headers=headers)
+        except:
+            print("Timeout error!")
+            exit()
         if response.status_code == requests.codes.ok:
             res_json = response.json()
             if res_json['status']:

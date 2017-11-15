@@ -1,0 +1,1 @@
+python3 tickets.py 天津 任丘 今天
