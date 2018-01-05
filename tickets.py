@@ -86,8 +86,9 @@ def get_date_info(arguments):
 def get_urls(arguments):
     from_station, to_station = get_station_info(arguments)
     date = get_date_info(arguments)
-    url_models = ['https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
-                  'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT']
+    url_models = ['https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
+                  'https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
+                  'https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT']
     for url_model in url_models:
         url = url_model.format(
             date, from_station, to_station
@@ -106,19 +107,25 @@ def cli():
     """command-line interface"""
     arguments = get_arg()
     headers = get_head()
+    flag = False
     for url in get_urls(arguments):
         try:
             response = requests.get(url, verify=False, headers=headers)
+            # print(response)
         except:
             print("Timeout error!")
             exit()
         if response.status_code == requests.codes.ok:
             res_json = response.json()
+            # print(res_json)
             if res_json['status']:
                 rows = res_json['data']  # 一级解析
                 trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
                 trains.pretty_print()
+                flag = True
                 break
+    if not flag:
+        print('Error: Result not found. Please check the code or contact with the author.')
 
 
 if __name__ == '__main__':
