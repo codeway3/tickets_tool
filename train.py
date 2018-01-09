@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 from prettytable import PrettyTable
 
 
@@ -18,7 +18,7 @@ def colored(color, text):
 
 class TrainCollection(object):
 
-    header = '车次 车站 发车时间 运行时间 商务座 一等座 二等座 软卧 硬卧 硬座 无座'.split()
+    header = '车次 出发站,到达站 出发时间,到达时间 运行时间 商务座 一等座 二等座 软卧 硬卧 硬座 无座'.split()
     alpha_tab = 'G C D T K Z Y'.split()
 
     def __init__(self, tmp, arguments):
@@ -64,10 +64,10 @@ class TrainCollection(object):
                 train = [
                     train_code,
                     '\n'.join([(colored('yellow', '始') if start_station_code == from_station_code else colored('blue', '过'))
-                              + ' ' + colored('green', self.map[from_station_code]),
-                              (colored('purple', '终') if end_station_code == to_station_code else colored('blue', '过'))
-                              + ' ' + colored('red', self.map[to_station_code]),
-                               ' ']),
+                               + ' ' + colored('green', self.map[from_station_code]),
+                               (colored('purple', '终') if end_station_code == to_station_code else colored('blue', '过'))
+                               + ' ' + colored('red', self.map[to_station_code])
+                               ]),
                     '\n'.join([colored('green', start_time),
                                colored('red', arrive_time)]),
                     '\n'.join([self._get_duration(duration),
@@ -92,9 +92,14 @@ class TrainCollection(object):
                 yield train
 
     def pretty_print(self):
-        pt = PrettyTable()
-        pt._set_field_names(self.header)
+        pt = PrettyTable(header=False)
+        header = []
+        for x in self.header:
+            header.append('\n'.join(x.split(',')))
+        pt.add_row(header)
         for train in self.trains:
             pt.add_row(train)
+
         pt.align = 'l'
-        print(pt)
+        result = pt.get_string(hrules=1)
+        print(result)

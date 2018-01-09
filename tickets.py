@@ -120,12 +120,17 @@ def cli():
             try:
                 res_json = response.json()
             except:
-                print('Error: JSON parse failed.')
+                print('Error: JSON parse failed. Try again.')
+                exit()
             # print(res_json)
-            if res_json['status']:
+            if res_json['status'] and res_json['data'] != '':
                 rows = res_json['data']  # 一级解析
                 trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
-                trains.pretty_print()
+                try:
+                    trains.pretty_print()
+                except:
+                    print('Error: prettytable print failed.')
+                    exit()
                 flag = True
                 break
     if not flag:
