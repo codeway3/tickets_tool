@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from prettytable import PrettyTable
 
 
@@ -17,7 +18,7 @@ def colored(color, text):
 
 class TrainCollection(object):
 
-    header = 'train station time duration business first second softsleep hardsleep hardsit nosit'.split()
+    header = '车次 车站 发车时间 运行时间 商务座 一等座 二等座 软卧 硬卧 硬座 无座'.split()
     alpha_tab = 'G C D T K Z Y'.split()
 
     def __init__(self, tmp, arguments):

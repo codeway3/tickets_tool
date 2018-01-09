@@ -52,10 +52,10 @@ def get_station_info(arguments):
         if to_station is None:
             raise KeyError
     except ValueError:
-        print("Invalid from_station name: {}".format(arguments['<from>']))
+        print('Invalid from_station name: {}'.format(arguments['<from>']))
         exit()
     except KeyError:
-        print("Invalid to_station name: {}".format(arguments['<to>']))
+        print('Invalid to_station name: {}'.format(arguments['<to>']))
         exit()
     else:
         return from_station, to_station
@@ -78,7 +78,7 @@ def get_date_info(arguments):
             else:
                 raise Exception
         except:
-            print("Invalid date: {}".format(arguments['<date>']))
+            print('Invalid date: {}'.format(arguments['<date>']))
             exit()
     return date
 
@@ -88,6 +88,7 @@ def get_urls(arguments):
     date = get_date_info(arguments)
     url_models = ['https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
                   'https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
+                  'https://kyfw.12306.cn/otn/leftTicket/queryZ?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
                   'https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT']
     for url_model in url_models:
         url = url_model.format(
@@ -113,10 +114,13 @@ def cli():
             response = requests.get(url, verify=False, headers=headers)
             # print(response)
         except:
-            print("Timeout error!")
+            print('Timeout error!')
             exit()
         if response.status_code == requests.codes.ok:
-            res_json = response.json()
+            try:
+                res_json = response.json()
+            except:
+                print('Error: JSON parse failed.')
             # print(res_json)
             if res_json['status']:
                 rows = res_json['data']  # 一级解析
