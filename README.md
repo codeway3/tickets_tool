@@ -1,6 +1,6 @@
 # tickets_tool
 ### 12306火车票查询工具
-
+  
 ## 使用  
 命令行运行，用-h或--help查询具体参数用法  
   
@@ -28,14 +28,20 @@
 更改docopt并添加异常处理， 增强代码鲁棒性  
 
 
+## 已知问题  
+response有时返回的不是我们需要获取的JSON数据，而是一个html文件，暂时不知道如何解决，这种情况会抛出JSON解析异常，多运行几次可以获得正确结果。
+  
+  
+## ToDoList
+- [x] 添加参数解析功能与对应结果筛选
+- [x] 添加中文车站名查询功能
+- [x] 增强代码鲁棒性
+- [ ] 修复已知问题  
+  
+  
 ## 参考资料
 [实验楼文档](https://www.shiyanlou.com/courses/623/labs/2072/document)  
 [prettytable文档](https://code.google.com/archive/p/prettytable/wikis/Tutorial.wiki)  
 [virtualenv参考资料](http://www.nowamagic.net/academy/detail/1330228)  
 [docopt参考资料](http://www.tuicool.com/articles/36zyQnu)  
 [汉字转拼音参考资料](http://www.cnblogs.com/code123-cc/p/4822886.html)
-
-## ToDoList
-- [x] 添加参数解析功能与对应结果筛选
-- [x] 添加中文车站名查询功能
-- [x] 增强代码鲁棒性
