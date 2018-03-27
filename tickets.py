@@ -19,13 +19,14 @@ Example:
     tickets beijing shanghai 2016-08-25
     tickets 北京 上海 明天
 """
+import re
+import time
+import requests
 from res.stations import stations
 from res.pinyin import PinYin
 from train import TrainCollection
 from docopt import docopt
 from datetime import datetime, timedelta
-import time
-import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 
@@ -84,18 +85,15 @@ def get_date_info(arguments):
 
 
 def get_urls(arguments):
-    from_station, to_station = get_station_info(arguments)
+    html = requests.get('https://kyfw.12306.cn/otn/leftTicket/init').text
+    url_model = 'https://kyfw.12306.cn/otn/{}?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT'
+    query_code = re.search(r"CLeftTicketUrl = '(.*?)';", html).group(1)
     date = get_date_info(arguments)
-    url_models = ['https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
-                  'https://kyfw.12306.cn/otn/leftTicket/queryO?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
-                  'https://kyfw.12306.cn/otn/leftTicket/queryX?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
-                  'https://kyfw.12306.cn/otn/leftTicket/queryZ?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT',
-                  'https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date={}&leftTicketDTO.from_station={}&leftTicketDTO.to_station={}&purpose_codes=ADULT']
-    for url_model in url_models:
-        url = url_model.format(
-            date, from_station, to_station
-        )
-        yield url
+    from_station, to_station = get_station_info(arguments)
+    url = url_model.format(
+        query_code, date, from_station, to_station
+    )
+    return url
 
 
 def get_head():
@@ -109,33 +107,30 @@ def cli():
     """command-line interface"""
     arguments = get_arg()
     headers = get_head()
-    flag = False
-    for url in get_urls(arguments):
+    url = get_urls(arguments)
+    try:
+        response = requests.get(url, verify=False, headers=headers)
+        # print(response)
+    except:
+        print('Timeout error!')
+        exit()
+    if response.status_code == requests.codes.ok:
         try:
-            response = requests.get(url, verify=False, headers=headers)
-            # print(response)
+            res_json = response.json()
         except:
-            print('Timeout error!')
+            print('Error: JSON parse failed. Try again.')
             exit()
-        if response.status_code == requests.codes.ok:
+        # print(res_json)
+        if res_json['status'] and res_json['data'] != '':
+            rows = res_json['data']  # 一级解析
+            trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
             try:
-                res_json = response.json()
+                trains.pretty_print()
             except:
-                print('Error: JSON parse failed. Try again.')
+                print('Error: prettytable print failed.')
                 exit()
-            # print(res_json)
-            if res_json['status'] and res_json['data'] != '':
-                rows = res_json['data']  # 一级解析
-                trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
-                try:
-                    trains.pretty_print()
-                except:
-                    print('Error: prettytable print failed.')
-                    exit()
-                flag = True
-                break
-    if not flag:
-        print('Error: Result not found. Please check the code or contact with the author.')
+        else:
+            print('Error: Result not found. Please check the code or contact with the author.')
 
 
 if __name__ == '__main__':
