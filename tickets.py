@@ -21,6 +21,7 @@ Example:
 """
 import re
 import time
+import logging
 import requests
 from res.stations import stations
 from res.pinyin import PinYin
@@ -28,6 +29,14 @@ from train import TrainCollection
 from docopt import docopt
 from datetime import datetime, timedelta
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+logger = logging.getLogger(__name__)
+
+
+def logger_init():
+    logging.basicConfig(level=logging.INFO,
+                        datefmt='%Y-%M-%d %H:%M:%S',
+                        format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
 def get_arg():
@@ -53,10 +62,10 @@ def get_station_info(arguments):
         if to_station is None:
             raise KeyError
     except ValueError:
-        print('Invalid from_station name: {}'.format(arguments['<from>']))
+        logger.info('Invalid from_station name: {}'.format(arguments['<from>']))
         exit()
     except KeyError:
-        print('Invalid to_station name: {}'.format(arguments['<to>']))
+        logger.info('Invalid to_station name: {}'.format(arguments['<to>']))
         exit()
     else:
         return from_station, to_station
@@ -79,7 +88,7 @@ def get_date_info(arguments):
             else:
                 raise Exception
         except:
-            print('Invalid date: {}'.format(arguments['<date>']))
+            logger.info('Invalid date: {}'.format(arguments['<date>']))
             exit()
     return date
 
@@ -110,29 +119,30 @@ def cli():
     url = get_urls(arguments)
     try:
         response = requests.get(url, verify=False, headers=headers)
-        # print(response)
+        logger.debug(response)
     except:
-        print('Timeout error!')
+        logger.error('Timeout error!')
         exit()
     if response.status_code == requests.codes.ok:
         try:
             res_json = response.json()
         except:
-            print('Error: JSON parse failed. Try again.')
+            logger.warning('JSON parse failed. Try again.')
             exit()
-        # print(res_json)
+        logger.debug(res_json)
         if res_json['status'] and res_json['data'] != '':
             rows = res_json['data']  # 一级解析
             trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
             try:
                 trains.pretty_print()
             except:
-                print('Error: prettytable print failed.')
+                logger.warning('prettytable print failed.')
                 exit()
         else:
-            print('Error: Result not found. Please check the code or contact with the author.')
+            logger.error('Result not found. Please check the code or contact with the author.')
 
 
 if __name__ == '__main__':
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # 禁用安全请求警告
+    logger_init()
     cli()
