@@ -19,9 +19,11 @@ Example:
     tickets beijing shanghai 2016-08-25
     tickets 北京 上海 明天
 """
+import os
 import re
 import time
 import logging
+import logging.handlers
 import requests
 from res.stations import stations
 from res.pinyin import PinYin
@@ -34,9 +36,20 @@ logger = logging.getLogger(__name__)
 
 
 def logger_init():
-    logging.basicConfig(level=logging.INFO,
+    path = './log'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    filename = path + '/all.log'
+    fh = logging.handlers.RotatingFileHandler(filename, mode='a+', maxBytes=1048576, backupCount=3)
+    fh.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.INFO)
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s - %(message)s',
                         datefmt='%Y-%M-%d %H:%M:%S',
-                        format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+                        handlers=[sh, fh])
 
 
 def get_arg():
