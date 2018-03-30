@@ -58,7 +58,7 @@ def get_date_info(arguments):
             else:
                 raise Exception
         except:
-            logger.info('Invalid date: {}'.format(arguments['<date>']))
+            logger.info('Invalid date: {}'.format(tmp_date))
             exit()
     return date
 

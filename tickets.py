@@ -63,17 +63,18 @@ def cli():
         except:
             logger.warning('JSON parse failed. Try again.')
             exit()
-        logger.debug(res_json)
-        if res_json['status'] and res_json['data'] != '':
-            rows = res_json['data']  # 一级解析
-            trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
-            try:
-                trains.pretty_print()
-            except:
-                logger.warning('prettytable print failed.')
-                exit()
         else:
-            logger.error('Result not found. Please check the log.')
+            logger.debug(res_json)
+            if res_json['status']:
+                rows = res_json['data']  # 一级解析
+                trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
+                try:
+                    trains.pretty_print()
+                except:
+                    logger.warning('prettytable print failed.')
+                    exit()
+            else:
+                logger.error('Result not found. Please check the log.')
 
 
 if __name__ == '__main__':
