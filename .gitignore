@@ -1,5 +1,6 @@
 *_
-*.idea/
-*.vscode/
-*.log*
+.idea/
+.vscode/
+log/
 _venv/
+attempt/
