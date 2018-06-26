@@ -1,4 +1,5 @@
 *_
+*.pyc
 .idea/
 .vscode/
 log/
