@@ -55,13 +55,13 @@ def cli():
         response = requests.get(url, verify=False, headers=headers)
         logger.debug(response)
     except:
-        logger.error('Timeout error!')
+        logger.error('Requests error!')
         exit()
     if response.status_code == requests.codes.ok:
         try:
             res_json = response.json()
         except:
-            logger.warning('JSON parse failed. Try again.')
+            logger.error('JSON parse failed. Try again.')
             exit()
         else:
             logger.debug(res_json)
@@ -71,7 +71,7 @@ def cli():
                 try:
                     trains.pretty_print()
                 except:
-                    logger.warning('prettytable print failed.')
+                    logger.error('prettytable print failed.')
                     exit()
             else:
                 logger.error('Result not found. Please check the log.')
