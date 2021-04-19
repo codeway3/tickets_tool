@@ -5,7 +5,7 @@
 命令行运行，用-h或--help查询具体参数用法  
   
 ## 示例  
-![](https://github.com/codeway3/tickets_tool/screenshot.png)
+![image](https://github.com/codeway3/tickets_tool/blob/master/screenshot.png)
   
 ## 更新
 * **2016.10**  
