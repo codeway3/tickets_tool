@@ -57,7 +57,7 @@ def get_date_info(arguments):
                 date = time.strftime('%Y-%m-%d', time.strptime(tmp_date, '%y%m%d'))
             else:
                 raise Exception
-        except:
+        except Exception:
             logger.info('Invalid date: {}'.format(tmp_date))
             exit()
     return date

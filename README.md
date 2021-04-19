@@ -5,7 +5,7 @@
 命令行运行，用-h或--help查询具体参数用法  
   
 ## 示例  
-![](http://7xvw3v.com2.z0.glb.qiniucdn.com/17-11-13/54273171.jpg)
+![](https://github.com/codeway3/tickets_tool/screenshot.png)
   
 ## 更新
 * **2016.10**  
@@ -23,7 +23,6 @@
 * **2017.07**  
 由于12306数据格式大量变动，重新分析了数据组成，重写数据解包代码  
 改动代码以符合PEP8  
-修新bug  
 * **2017.09**  
 重构代码  
 * **2017.10**  
@@ -41,10 +40,9 @@ response有时返回的不是我们需要获取的JSON数据，而是一个html�
 - [x] 添加参数解析功能与对应结果筛选
 - [x] 添加中文车站名查询功能
 - [x] 增强代码鲁棒性
-- [ ] 修复已知问题  
+- [ ] 添加车票价格查询功能  
   
-## 参考资料
-[实验楼文档](https://www.shiyanlou.com/courses/623/labs/2072/document)  
+## 参考资料 
 [prettytable文档](https://code.google.com/archive/p/prettytable/wikis/Tutorial.wiki)  
 [virtualenv参考资料](http://www.nowamagic.net/academy/detail/1330228)  
 [docopt参考资料](http://www.tuicool.com/articles/36zyQnu)  
