@@ -26,9 +26,11 @@ def get_station_info(arguments):
     p2e.load_word()
     try:
         from_station = stations.get(p2e.hanzi2pinyin(string=arguments['<from>']))
+        to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
+        if '-v' in arguments and arguments['-v']:
+            from_station, to_station = to_station, from_station
         if from_station is None:
             raise ValueError
-        to_station = stations.get(p2e.hanzi2pinyin(string=arguments['<to>']))
         if to_station is None:
             raise KeyError
     except ValueError:

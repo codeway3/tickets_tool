@@ -2,7 +2,7 @@
 """Train tickets query via command-line.
 
 Usage:
-    tickets [-GCDTKZYO] (<from> <to> <date>)
+    tickets (<from> <to> <date>) [-GCDTKZYOv]
 
 Options:
     -h,--help   显示帮助菜单
@@ -14,6 +14,7 @@ Options:
     -Z          直达
     -Y          旅游
     -O          其他
+    -v          调换起始车站
 
 Example:
     tickets beijing shanghai 2016-08-25
@@ -54,13 +55,13 @@ def cli():
     try:
         response = requests.get(url, verify=False, headers=headers)
         logger.debug(response)
-    except:
+    except Exception:
         logger.error('Requests error!')
         exit()
     if response.status_code == requests.codes.ok:
         try:
             res_json = response.json()
-        except:
+        except Exception:
             logger.error('JSON parse failed. Try again.')
             exit()
         else:
@@ -70,7 +71,7 @@ def cli():
                 trains = TrainCollection(rows, arguments)  # 二级解析 创建trains对象
                 try:
                     trains.pretty_print()
-                except:
+                except Exception:
                     logger.error('prettytable print failed.')
                     exit()
             else:
